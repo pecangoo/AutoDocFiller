@@ -1,0 +1,159 @@
+{
+  "name_template": [
+    {
+      "name_field": "Номер договора",
+      "tag_field": "agrNumber",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "\"__-__-__/__/___\""
+    },
+    {
+      "name_field": "Дата заключения договора",
+      "tag_field": "dateA",
+      "value_field": "",
+      "type_field": "date",
+      "hint": ""
+    },
+    {
+      "name_field": "Полное название компании",
+      "tag_field": "nmCompany",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "Открытое акционерное общество «______________»\n(ОАО «______________»)"
+    },
+    {
+      "name_field": "Номер записи компании",
+      "tag_field": "cpmNumber",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "Открытое акционерное общество «______________»\n(ОАО «______________»)"
+    },
+    {
+      "name_field": "Руководитель и должность",
+      "tag_field": "nmCEO",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "Генерального директора Крамаренко Виталия Сергеевича"
+    },
+
+    {
+      "name_field": "Дата записи в реестр",
+      "tag_field": "dateN",
+      "value_field": "",
+      "type_field": "date",
+      "hint": ""
+    },
+    {
+      "name_field": "Краткое ФИО директора",
+      "tag_field": "shortName",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "Иванов И.А"
+    },
+    {
+      "name_field": "E-Mail заказчика",
+      "tag_field": "e-mail",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "mail@mail.ru"
+    },
+    {
+      "name_field": "Адрес заказчика",
+      "tag_field": "street",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "Город Москва, улица Кремлевская д 1, кор 1, кв 1"
+    },
+    {
+      "name_field": "Телеграмм группа",
+      "tag_field": "tgGroup",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "t.me/PavelDurov"
+    },
+    {
+      "name_field": "Реквизиты название компании",
+      "tag_field": "nameCompany",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "ООО \"РАЗВИТИЕ-М\""
+    },
+    {
+      "name_field": "Реквизиты название компании",
+      "tag_field": "nameCompany",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "t.me/PavelDurov"
+    },
+    {
+      "name_field": "ИНН(только номер)",
+      "tag_field": "nalogNumber",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "5044000048"
+    },
+    {
+      "name_field": "КПП(только номер)",
+      "tag_field": "corNumber",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "5044000008"
+    },
+     {
+      "name_field": "ОГРН(полностью)",
+      "tag_field": "regNumber",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "ОГРН 1035008850271"
+    },
+    {
+      "name_field": "Полное название банка",
+      "tag_field": "nameBank",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "ПАО Сбер, г Москва"
+    },
+    {
+      "name_field": "Рассчетный счет(только номер)",
+      "tag_field": "checkingAccount",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "4070 2810 0000 0000 0000"
+    },
+    {
+      "name_field": "Корреспондентский счет(только номер)",
+      "tag_field": "corAccount",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "3010 1810 0000 0000 0000"
+    },
+    {
+      "name_field": "БИК банка(только номер)",
+      "tag_field": "bikNumber",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "044000000"
+    },
+    {
+      "name_field": "Номер телефона заказчика",
+      "tag_field": "phoneNumber",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "+ 7 (495) 777-77-77"
+    },
+    {
+      "name_field": "Название должности руководителя",
+      "tag_field": "directorLabel",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "+ 7 (495) 777-77-77"
+    },
+    {
+      "name_field": "Полное ФИО директора",
+      "tag_field": "longName",
+      "value_field": "",
+      "type_field": "text",
+      "hint": "Иваноd Иван Иванович"
+    }
+  ]
+}

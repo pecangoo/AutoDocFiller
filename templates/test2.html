@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Input Field Example</title>
+</head>
+<body>
+
+<form id="myForm">
+
+
+    <div id="container" class="label">
+
+    </div>
+
+    <button type="button" id="addButton">+</button>
+    <br>
+
+    <div id="field">
+        <label> Имя шаблона</label>
+        <input type="text"
+               name="inputField[]"/>
+        <br>
+    </div>
+
+</form>
+<form id="send_form">
+ <button type="button">Отправить</button>
+    </form>
+
+<script>
+
+   document.getElementById('addButton').addEventListener('click', function () {
+    var container = document.getElementById('container');
+
+    // Проверка, существует ли уже таблица
+    var table = container.querySelector('table');
+    if (!table) {
+        // Создание таблицы, если она не существует
+        table = document.createElement('table');
+
+        // Создание строки заголовков
+        var headerRow = document.createElement('tr');
+
+        // Создание заголовков, если таблица только что создана
+        var nameHeader = document.createElement('th');
+        nameHeader.textContent = 'Название поля';
+        var tagHeader = document.createElement('th');
+        tagHeader.textContent = 'Тэг поля';
+        var hintHeader = document.createElement('th');
+        hintHeader.textContent = 'Подсказка';
+
+        // Добавление заголовков в строку заголовков
+        headerRow.appendChild(nameHeader);
+        headerRow.appendChild(tagHeader);
+        headerRow.appendChild(hintHeader);
+
+        // Добавление строки заголовков в таблицу
+        table.appendChild(headerRow);
+
+        // Добавление таблицы в контейнер
+        container.appendChild(table);
+    }
+
+    // Создание строки для полей ввода
+    var inputRow = document.createElement('tr');
+
+    // Создание ячеек для полей ввода
+    var nameCell = document.createElement('td');
+    var nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.name = 'nameField[]';
+    nameInput.required = true;
+    nameCell.appendChild(nameInput);
+
+    var tagCell = document.createElement('td');
+    var tagInput = document.createElement('input');
+    tagInput.type = 'text';
+    tagInput.name = 'tagField[]';
+    tagInput.required = true;
+    tagCell.appendChild(tagInput);
+
+    var hintCell = document.createElement('td');
+    var hintInput = document.createElement('input');
+    hintInput.type = 'text';
+    hintInput.name = 'hintField[]';
+    hintInput.required = true;
+    hintCell.appendChild(hintInput);
+
+    // Добавление ячеек в строку полей ввода
+    inputRow.appendChild(nameCell);
+    inputRow.appendChild(tagCell);
+    inputRow.appendChild(hintCell);
+
+    // Добавление строки полей ввода в таблицу
+    table.appendChild(inputRow);
+});
+
+
+   document.getElementById('myForm').addEventListener('button', function (e) {
+        e.preventDefault(); // Prevent default form submission
+          console.log('TEST');
+        var formData = new FormData(this); // Get form data
+        fetch('/submit', { // Assuming Flask route is '/submit'
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Handle success
+                    console.log('Data sent successfully');
+                } else {
+                    // Handle error
+                    console.error('Failed to send data');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+</body>
+</html>

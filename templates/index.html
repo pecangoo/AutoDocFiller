@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Загрузка файла</title>
+</head>
+<body>
+<h2>Заполнение шаблона</h2>
+<form id="form_data" action="/index" method="post" enctype="multipart/form-data">
+
+    <style>
+        .one-line {
+            display: flex;
+
+            label {
+                width: 15%;
+                display: block;
+                margin-bottom: 1px;
+            }
+
+            input {
+                width: 60%;
+                padding: 1px;
+                margin-bottom: 1px;
+                box-sizing: border-box;
+            }
+        }
+
+        .one-line2 {
+            display: flex;
+
+            label {
+                width: 10%;
+                display: block;
+                margin-bottom: 1px;
+            }
+
+            input {
+                width: 20%;
+                padding: 1px;
+                margin-bottom: 1px;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+    <ul>
+        {% for item in data %}
+            <div class="one-line">
+                <label>{{ item["name_field"] }}</label>
+                <input id="form1"
+                       value="{{ item["value_field"] }}"
+                       type="{{ item["type_field"] }}"
+                       name="{{ item["tag_field"] }}"
+                       title="{{ item["hint"] }}"
+               >
+            </div>
+        {% endfor %}
+    </ul>
+
+    <input id="form1"
+           type="file"
+           name="file"><br>    <br>
+
+    <input type="button"
+           value="Заполнить документ"
+           onclick="checkAllFields();">
+    <br><br><br>
+    <h2>Сохранить шаблон</h2>
+    {#            <input type="button" onclick="checkAllFields();">#}
+    <div class="one-line2">
+        <label>Имя шаблона</label>
+        <input type="text" name="name_template" id="name_template">
+        <input type="button" value="Сохранить шаблон" onclick="checkTemplate();">
+    </div>
+
+
+</form>
+<br><br>
+<h2>Выбрать шаблон из существующих</h2>
+<form id="form_data"
+      action="/choose_template"
+      method="get">
+    <input type="submit"
+           value="Загрузить шаблон из списка">
+</form>
+<script>
+
+    var message = "{{ message }}";
+    if (message) {
+        alert(message);
+    }
+
+
+    function checkAllFields() {
+        var fields = document.querySelectorAll('[id = "form1"]')
+        var isEmpty = false;
+        fields.forEach(function (field) {
+            if (field.value === "") {
+                isEmpty = true
+            }
+        });
+        if (isEmpty) {
+            alert("Некоторые поля не заполнены")
+        } else {
+            var form = document.getElementById("form_data");
+            form.submit();
+        }
+
+    }
+
+    function checkTemplate() {
+        console.log("85858");
+        var textField = document.getElementById("name_template");
+        var textValue = textField.value.trim();
+        if (textValue === "") {
+            alert("Введите название шаблона");
+        } else {
+            var form = document.getElementById("form_data");
+            form.action = "/accept";
+            form.submit();
+        }
+    }
+</script>
+
+{#<script src="script.js"></script>#}
+</body>
+</html>
