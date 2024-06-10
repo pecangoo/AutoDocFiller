@@ -4,43 +4,131 @@
     <title>Загрузка файла</title>
 </head>
 <body>
-<h2>Заполнение шаблона</h2>
+<div class="header">
+	<h2>Заполнение шаблона</h2>
+</div>
 <form id="form_data" action="/index" method="post" enctype="multipart/form-data">
 
     <style>
+		html {
+			--main-color: #234988;
+			--hover-color: #3e69ae;
+		}
+
+		body {
+			margin: 0;
+		}
+
+		.header {
+			width: 100%;
+			position: fixed;
+			background-color: var(--main-color);
+			color: #ffffff;
+			padding-left: 20px;
+			top: 0;
+		}
+
+		.buttons {
+			border-radius: 10px;
+			margin-bottom: 20px;
+			background-color: var(--main-color);
+			cursor: pointer;
+			color: #ffffff;
+			border-color: var(--main-color);
+			height: 40px;
+			line-height: 20px;
+			font-size: 16px;
+			margin-left: 30px;
+			box-shadow: 0px 3px 7px 0px #8c8c8c;
+			border-width: 0;
+			padding: 10px;
+		}
+
+		.container {
+			width: calc(25px + 50%);
+			display: flex;
+			justify-content: center;
+		}
+
+		.header-mini {
+			margin-left: 20px;
+			color: var(--main-color);
+		}
+
+		.file-button {
+			margin-left: 20px;
+		}
+
+		.buttons:hover {
+			background-color: var(--hover-color);
+		}
+
+		.input-text {
+			width: 40%;
+			padding: 10px;
+			box-sizing: border-box;
+			height: 40px;
+			border-color: transparent;
+			/* border: 2px	var(--main-color) solid; */
+			border-radius: 8px;
+			font-size: 16px;
+			box-shadow: 0px 3px 5px 1px #8c8c8c4a;
+		}
+
         .one-line {
             display: flex;
 
             label {
-                width: 15%;
+                width: 20%;
                 display: block;
                 margin-bottom: 1px;
+				font-size: 18px;
+				margin-right: 15px;
+				margin-left: 10px;
+				text-align: end;
+				line-height: 30px;
             }
 
             input {
-                width: 60%;
-                padding: 1px;
-                margin-bottom: 1px;
+                width: 30%;
+                padding: 5px;
                 box-sizing: border-box;
+				margin-bottom: 20px;
+				height: 30px;
+				border-color: transparent;
+				border: 2px	var(--main-color) solid;
+				border-radius: 8px;
+				box-shadow: 0px 3px 5px 1px #8c8c8c4a;
+				
             }
         }
 
         .one-line2 {
-            display: flex;
+			width: calc(25px + 50%);
+			display: flex;
+			justify-content: center;
 
-            label {
+            /* label {
                 width: 10%;
                 display: block;
                 margin-bottom: 1px;
-            }
+				/* font-size: 18px;
+				margin-right: 15px;
+				text-align: end;
+				line-height: 30px; 
+            } */
 
-            input {
+            /* input {
                 width: 20%;
                 padding: 1px;
                 margin-bottom: 1px;
                 box-sizing: border-box;
-            }
-        }
+            } */ 
+		}
+
+		ul {
+			margin-top: 90px;
+		}
     </style>
     <ul>
         {% for item in data %}
@@ -56,30 +144,39 @@
         {% endfor %}
     </ul>
 
-    <input id="form1"
+    <input class="file-button"
+		   id="form1"
            type="file"
            name="file"><br>    <br>
+	<!-- <label class="input-file">
+			<input type="file" name="file" id="form1" onchange="(e) => updateNamesFile(e)">
+			<span class="input-file-btn">Выберите файл</span>           
+			<span class="input-file-text" id="fileNameText"></span>
+	</label><br>    <br> -->
 
-    <input type="button"
-           value="Заполнить документ"
-           onclick="checkAllFields();">
+   <div class="container">
+		<input class="buttons"
+				type="button"
+				value="Заполнить документ"
+				onclick="checkAllFields();">
+   </div> 
     <br><br><br>
-    <h2>Сохранить шаблон</h2>
-    {#            <input type="button" onclick="checkAllFields();">#}
+    <h3 class="header-mini">Сохранение шаблона</h3>
+    {#            <input class="buttons" type="button" onclick="checkAllFields();">#}
     <div class="one-line2">
-        <label>Имя шаблона</label>
-        <input type="text" name="name_template" id="name_template">
-        <input type="button" value="Сохранить шаблон" onclick="checkTemplate();">
+        <input class="input-text" type="text" placeholder="Введите имя шаблона" name="name_template" id="name_template">
+        <input class="buttons" type="button" value="Сохранить шаблон" onclick="checkTemplate();">
     </div>
 
 
 </form>
 <br><br>
-<h2>Выбрать шаблон из существующих</h2>
+<h3 class="header-mini">Выбрать шаблон из существующих</h3>
 <form id="form_data"
       action="/choose_template"
       method="get">
-    <input type="submit"
+    <input class="buttons"
+		   type="submit"
            value="Загрузить шаблон из списка">
 </form>
 <script>
@@ -119,6 +216,10 @@
             form.submit();
         }
     }
+	// function updateNamesFile(e) {
+	// 	let file = e.files[0]
+	// 	document.getElementById('fileNameText').innerHTML = file.name;
+	// }
 </script>
 
 {#<script src="script.js"></script>#}
