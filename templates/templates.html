@@ -6,7 +6,21 @@
 </head>
 <body>
 
-<h1>Список сохраненных шаблонов:</h1>
+<div class="header">
+	<h2>Шаблоны и формы</h2>
+</div>
+
+<form id="form_data"
+      action="/index"
+      method="get">
+	<div class="button-cont1">
+		<input class="buttons" type="submit"
+           value="На главную">
+	</div>
+</form>
+
+<h3 class="header-mini down">Выбрать форму для создания шаблона:</h3>
+<!-- Form для отображения форм -->
 <form id="form_template"
       action="/index"
       method="post"
@@ -14,22 +28,145 @@
     <ul>
         {% for name in names %}
             <div class="one-line">
-                <label>{{ name }}</label>
-            <a href="/index/{{ name }}"
+                <!-- <label>{{ name }}</label> -->
+            <a class="links" href="/index/{{ name }}"
                id="submit_form">{{ name }}</a>
             </div>
         {% endfor %}
     </ul>
 </form><br><br>
 
-<form id="form_data"
+<h3 class="header-mini">Выбрать шаблон:</h3>
+<!-- Form для отображения шаблонов -->
+<form id="form_template2"
       action="/index"
-      method="get">
-    <input type="submit"
-           value="На главную">
-</form>
+      method="post"
+      enctype="multipart/form-data">
+    <ul>
+        {% for name in names %}
+            <div class="one-line">
+                <!-- <label>{{ name }}</label> -->
+				<a class="links" href="/index/{{ name }}"
+				id="submit_form">{{ name }}</a> 
+				<!-- Здесь можно вместо форма 1 также передавть название формы через фигурные скобки -->
+				<div class="name-form">
+					: форма 1
+				</div>
+				<div class="delete" onclick="deleteTemp(name)">
+					-
+				</div>
+            </div>
+        {% endfor %}
+    </ul>
+</form><br><br>
 
 
+
+<style>
+	html {
+		--main-color: #234988;
+		--hover-color: #3e69ae;
+		--light-hover: #f2a3a3;
+	}
+
+	body {
+		padding: 0;
+		margin: 0;
+	}
+
+	.button-cont1 {
+		display: flex;
+		width: calc(100% - 20px);
+		justify-content: flex-end;
+		margin-top: 7px;
+		position: fixed;
+	}
+
+	.links {
+		font-size: 18px;
+		text-decoration: none;
+		cursor: pointer;
+		color: black;
+		width: 25%;
+	}
+
+	.one-line a:hover {
+		color: var(--hover-color) !important;
+	}
+
+	.one-line {
+		margin-bottom: 15px;
+		display: flex;
+	}
+
+	.name-form {
+		font-size: 18px;
+		margin-left: 10px;
+		width: 20%;
+	}
+
+	.down {
+		margin-top: 90px;
+	}
+
+	.header {
+		width: 100%;
+		position: fixed;
+		background-color: var(--main-color);
+		color: #ffffff;
+		padding-left: 20px;
+		top: 0;
+	}
+
+	.delete {
+		margin-left: 8px;
+		width: 18px;
+		height: 18px;
+		font-size: 18px;
+		color: #000000;
+		background-color: white;
+		cursor: pointer;
+		text-align: center;
+		line-height: 18px;
+		border-radius: 5px;
+		box-shadow: 0px 3px 7px 0px #8c8c8c;
+		font-family: monospace;
+	}
+
+	.delete:hover {
+		background-color: var(--light-hover);
+	}
+
+	/* ul {
+		
+	} */
+
+	.buttons {
+		border-radius: 10px;
+		margin-bottom: 20px;
+		background-color: var(--main-color);
+		cursor: pointer;
+		color: #ffffff;
+		border-color: var(--main-color);
+		height: 40px;
+		line-height: 20px;
+		font-size: 16px;
+		margin-left: 30px;
+		box-shadow: 0px 3px 7px 0px #8c8c8c;
+		border-width: 0;
+		padding: 10px;
+	}
+
+	.buttons:hover {
+		background-color: var(--hover-color);
+	}
+
+	.header-mini {
+		margin-left: 20px;
+		color: var(--main-color);
+	}
+
+</style>
 
 <script>
     console.log("Script work")
@@ -37,6 +174,11 @@
         .addEventListener('click', function() {
         document.getElementById('form_template').submit();
     });
+
+	const deleteTemp = (name) => {
+		// fetch метод delete, в боди отдать name 
+		// 
+	}
 </script>
 
 </body>
