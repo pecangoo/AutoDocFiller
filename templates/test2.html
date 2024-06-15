@@ -16,6 +16,7 @@
 	<div id="field">
         <input type="text"
                name="inputField[]"
+			   id="nameTemp"
 			   class="input-text"
 			   placeholder="Имя шаблона"/>
         <br>
@@ -146,81 +147,144 @@
 </style>
 
 <script>
+	const getInfo = () => {
+		let tabl = document.getElementById('table1');
+		console.log(tabl);
+		let nameTemp = document.getElementById('nameTemp').value;
 
-   document.getElementById('addButton').addEventListener('click', function () {
-    var container = document.getElementById('container');
+		if (!tabl) {
+			alert("Шаблон не найден.")
+			return 0;
+		}
 
-    // Проверка, существует ли уже таблица
-    var table = container.querySelector('table');
-    if (!table) {
-        // Создание таблицы, если она не существует
-        table = document.createElement('table');
+		if (!nameTemp) {
+			alert("Необходимо заполнить все поля.")
+			return 0;
+		} 
 
-        // Создание строки заголовков
-        var headerRow = document.createElement('tr');
+		let result = {
+			'name_form': nameTemp,
+			'name_list': [],
+			'tag_list': [],
+			'hint_list': [] 
+		};
 
-        // Создание заголовков, если таблица только что создана
-        var nameHeader = document.createElement('th');
-        nameHeader.textContent = 'Название поля';
-		nameHeader.className = 'headers-table';
-        var tagHeader = document.createElement('th');
-        tagHeader.textContent = 'Тэг поля';
-		tagHeader.className = 'headers-table';
-        var hintHeader = document.createElement('th');
-        hintHeader.textContent = 'Подсказка';
-		hintHeader.className = 'headers-table';
+		let rows = tabl.querySelectorAll('tr');
+		var rowIndex = 0;
+		while (rowIndex < rows.length) {
+			var row = rows[rowIndex];
+			var cells = row.querySelectorAll('td');
 
-        // Добавление заголовков в строку заголовков
-        headerRow.appendChild(nameHeader);
-        headerRow.appendChild(tagHeader);
-        headerRow.appendChild(hintHeader);
+			var cellIndex = 0;
+			var allFieldsFilled = true;
+			while (cellIndex < cells.length) {
+				var cell = cells[cellIndex];
+				var input = cell.querySelector('input');
 
-        // Добавление строки заголовков в таблицу
-        table.appendChild(headerRow);
+				if (!input.value) {
+					alert("Необходимо заполнить все поля.");
+					allFieldsFilled = false;
+					break;
+				} else {
+					if (input.name === 'nameField[]') {
+						result['name_list'].push(String(input.value));
+					}
+					if (input.name === 'tagField[]') {
+						result['tag_list'].push(String(input.value));
+					}
+					if (input.name === 'hintField[]') {
+						result['hint_list'].push(String(input.value));
+					}
+				}
+				cellIndex++;
+			}
 
-        // Добавление таблицы в контейнер
-        container.appendChild(table);
-    }
+			if (!allFieldsFilled) {
+				break;
+			}
 
-    // Создание строки для полей ввода
-    var inputRow = document.createElement('tr');
+			rowIndex++;
+		}
+		console.log(result);
 
-    // Создание ячеек для полей ввода
-    var nameCell = document.createElement('td');
-    var nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.name = 'nameField[]';
-    nameInput.required = true;
-	nameInput.className = 'inputs';
-    nameCell.appendChild(nameInput);
+		// To do добавить запрос к беку 
+	}
 
-    var tagCell = document.createElement('td');
-    var tagInput = document.createElement('input');
-    tagInput.type = 'text';
-    tagInput.name = 'tagField[]';
-    tagInput.required = true;
-	tagInput.className = 'inputs';
-    tagCell.appendChild(tagInput);
+   	document.getElementById('addButton').addEventListener('click', function () {
+		var container = document.getElementById('container');
 
-    var hintCell = document.createElement('td');
-    var hintInput = document.createElement('input');
-    hintInput.type = 'text';
-    hintInput.name = 'hintField[]';
-    hintInput.required = true;
-	hintInput.className = 'inputs';
-    hintCell.appendChild(hintInput);
+		// Проверка, существует ли уже таблица
+		var table = container.querySelector('table');
+		
+		if (!table) {
+			// Создание таблицы, если она не существует
+			table = document.createElement('table');
+			table.id = 'table1';
+			// Создание строки заголовков
+			var headerRow = document.createElement('tr');
 
-    // Добавление ячеек в строку полей ввода
-    inputRow.appendChild(nameCell);
-    inputRow.appendChild(tagCell);
-    inputRow.appendChild(hintCell);
+			// Создание заголовков, если таблица только что создана
+			var nameHeader = document.createElement('th');
+			nameHeader.textContent = 'Название поля';
+			nameHeader.className = 'headers-table';
+			var tagHeader = document.createElement('th');
+			tagHeader.textContent = 'Тэг поля';
+			tagHeader.className = 'headers-table';
+			var hintHeader = document.createElement('th');
+			hintHeader.textContent = 'Подсказка';
+			hintHeader.className = 'headers-table';
 
-    // Добавление строки полей ввода в таблицу
-    table.appendChild(inputRow);
-});
+			// Добавление заголовков в строку заголовков
+			headerRow.appendChild(nameHeader);
+			headerRow.appendChild(tagHeader);
+			headerRow.appendChild(hintHeader);
+
+			// Добавление строки заголовков в таблицу
+			table.appendChild(headerRow);
+
+			// Добавление таблицы в контейнер
+			container.appendChild(table);
+		}
+
+		// Создание строки для полей ввода
+		var inputRow = document.createElement('tr');
+
+		// Создание ячеек для полей ввода
+		var nameCell = document.createElement('td');
+		var nameInput = document.createElement('input');
+		nameInput.type = 'text';
+		nameInput.name = 'nameField[]';
+		nameInput.required = true;
+		nameInput.className = 'inputs';
+		nameCell.appendChild(nameInput);
+
+		var tagCell = document.createElement('td');
+		var tagInput = document.createElement('input');
+		tagInput.type = 'text';
+		tagInput.name = 'tagField[]';
+		tagInput.required = true;
+		tagInput.className = 'inputs';
+		tagCell.appendChild(tagInput);
+
+		var hintCell = document.createElement('td');
+		var hintInput = document.createElement('input');
+		hintInput.type = 'text';
+		hintInput.name = 'hintField[]';
+		hintInput.required = true;
+		hintInput.className = 'inputs';
+		hintCell.appendChild(hintInput);
+
+		// Добавление ячеек в строку полей ввода
+		inputRow.appendChild(nameCell);
+		inputRow.appendChild(tagCell);
+		inputRow.appendChild(hintCell);
+
+		// Добавление строки полей ввода в таблицу
+		table.appendChild(inputRow);
+	});
 
 
-   document.getElementById('myForm').addEventListener('button', function (e) {
+   	document.getElementById('myForm').addEventListener('button', function (e) {
         e.preventDefault(); // Prevent default form submission
           console.log('TEST');
         var formData = new FormData(this); // Get form data
