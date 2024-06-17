@@ -7,17 +7,20 @@
 <body>
 
 <div class="header">
-	<h2>Шаблоны и формы</h2>
+	<div><h2>Шаблоны и формы</h2></div>
+	<div class="cont-back">
+		<form id="form_data"
+			action="/index"
+			method="get">
+			<div class="button-cont1">
+				<input class="back" type="submit"
+				value="На главную">
+			</div>
+		</form>
+	</div>
 </div>
 
-<form id="form_data"
-      action="/index"
-      method="get">
-	<div class="button-cont1">
-		<input class="buttons" type="submit"
-           value="На главную">
-	</div>
-</form>
+
 
 <h3 class="header-mini down">Выбрать форму для создания шаблона:</h3>
 <!-- Form для отображения форм -->
@@ -63,10 +66,14 @@
 
 
 <style>
+	* {
+		box-sizing: border-box;
+	}
 	html {
 		--main-color: #234988;
 		--hover-color: #3e69ae;
-		--light-hover: #f2a3a3;
+		--light-delete: #f2a3a3;
+		--light-hover: #c1d8f9;
 	}
 
 	body {
@@ -75,11 +82,32 @@
 	}
 
 	.button-cont1 {
-		display: flex;
-		width: calc(100% - 20px);
-		justify-content: flex-end;
-		margin-top: 7px;
-		position: fixed;
+		height: 100%;
+	}
+
+	.cont-back {
+		line-height: 67px;
+	}
+
+	.back {
+		background-color: #ffffff;
+		color: var(--main-color);
+		border-radius: 10px;
+		cursor: pointer;
+		border-color: #ffffff;
+		font-size: 16px;
+		height: 40px;
+		line-height: 20px;
+		/* box-shadow: 0px 3px 7px 0px #8c8c8c; */
+		border-width: 0;
+		padding: 10px;
+		color: var(--main-color);
+	}
+
+	.back:hover {
+		background-color: var(--light-hover);
+		border-color: var(--light-hover);
+		
 	}
 
 	.links {
@@ -115,7 +143,10 @@
 		background-color: var(--main-color);
 		color: #ffffff;
 		padding-left: 20px;
+		padding-right: 20px;
 		top: 0;
+		display: flex;
+		justify-content: space-between;
 	}
 
 	.delete {
@@ -134,7 +165,7 @@
 	}
 
 	.delete:hover {
-		background-color: var(--light-hover);
+		background-color: var(--light-delete);
 	}
 
 	/* ul {
