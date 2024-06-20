@@ -2,16 +2,18 @@ package com.example.filerspring.repository;
 
 import com.example.filerspring.model.FormAndTemplate;
 import com.example.filerspring.model.FormField;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.poi.util.StringUtil;
 import org.bson.Document;
 import org.springframework.stereotype.Repository;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Repository
 public class TemplateRepositoryMongoDB
@@ -23,23 +25,18 @@ public class TemplateRepositoryMongoDB
 
     public TemplateRepositoryMongoDB(MongoClient mongoClient) {
         this.mongoClient = mongoClient;
-        this.database = this.mongoClient
-                .getDatabase("templateDb");
+        this.database = this.mongoClient.getDatabase("templateDb");
     }
 
     @Override
     public List<FormAndTemplate> getNamesAllTemplates() {
+        MongoDatabase database = mongoClient.getDatabase("formsDB");
 
-        List<FormAndTemplate> resList = new ArrayList<FormAndTemplate>();
-        var listNameCol = database.listCollectionNames();
-
-        for (var name : listNameCol) {
-            System.out.print("ALL:");
-            resList.add(new FormAndTemplate(name.split("\\(:\\)")[0],
-                    name.split("\\(:\\)")[1]
-            ));
-        }
-        return resList;
+        // Преобразуем итератор в поток, мапаем каждый элемент в новый объект и собираем в список
+        return StreamSupport
+                .stream(database.listCollectionNames().spliterator(), false)
+                .map(name -> new FormAndTemplate(name.split("\\(:\\)")[0], name.split("\\(:\\)")[1]))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -51,38 +48,27 @@ public class TemplateRepositoryMongoDB
             System.out.println(el);
         }
         System.out.println("Name Template:" + nameTemplate);
-        var colTemplate
-                = database.getCollection(nameTemplate);
+        var colTemplate = database.getCollection(nameTemplate);
 
-
-        MongoCursor<Document> cursor = colTemplate.find().iterator();
-
-        try {
+        try (MongoCursor<Document> cursor = colTemplate.find().iterator()) {
             while (cursor.hasNext()) {
                 Document doc = cursor.next();
-                String value_f = "";
-                if(doc.get("value_field") != null)
-                    value_f = doc.get("value_field").toString();
-
+                Object valueField = doc.get("value_field");
                 formFieldList.add(new FormField(
                         doc.get("name_field").toString(),
-                doc.get("tag_field").toString(),
-                value_f,
-                doc.get("hint_field").toString()
+                        doc.get("tag_field").toString(),
+                        Objects.nonNull(valueField) ? valueField.toString() : "",
+                        doc.get("hint_field").toString()
                 ));
             }
-        } finally {
-            cursor.close();
         }
         return formFieldList;
     }
 
     @Override
     public void addNewTemplate(String nameForm, String nameTemplate, List<FormField> listFormField) {
-
-        deleteTemplateByName(nameForm +splitterName +  nameTemplate);
-        MongoCollection<Document> collection
-                = database.getCollection(nameForm + splitterName + nameTemplate);
+        deleteTemplateByName(nameForm + splitterName + nameTemplate);
+        MongoCollection<Document> collection = database.getCollection(nameForm + splitterName + nameTemplate);
 
         for (var el : listFormField) {
             Document employee = new Document()
@@ -103,14 +89,11 @@ public class TemplateRepositoryMongoDB
 
     @Override
     public void deleteTemplateByName(String fullTemplateName) {
-        boolean collectionExists =
-                database.listCollectionNames()
-                        .into(new ArrayList<>())
-                        .contains(fullTemplateName);
+        boolean collectionExists = database.listCollectionNames()
+                .into(new ArrayList<>())
+                .contains(fullTemplateName);
         if (collectionExists) {
-            database
-                    .getCollection(fullTemplateName)
-                    .drop();
+            database.getCollection(fullTemplateName).drop();
         }
     }
 }

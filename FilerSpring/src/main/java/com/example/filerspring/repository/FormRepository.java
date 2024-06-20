@@ -14,5 +14,6 @@ public interface FormRepository {
     List<String> getAllListNamesForms();
 
     void dropALL();
+
     void deleteFormByName(String nameForm);
 }

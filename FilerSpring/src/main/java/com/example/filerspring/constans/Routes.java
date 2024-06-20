@@ -1,6 +1,9 @@
 package com.example.filerspring.constans;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class Routes {
-    public final static String NameOriginForm = "Стандартная форма";
-    public static String PATH_TO_ORIGIN_FORM = "";
+    public String NAME_ORIGIN_FORM = "Стандартная форма";
+    public String PATH_TO_ORIGIN_FORM = "";
 }

@@ -47,6 +47,7 @@ public class RepositoryService
     public List<FormAndTemplate> getALlTemplates() {
         return templateRepository.getNamesAllTemplates();
     }
+
     public void addNewTemplate(String nameForm,
                                String nameTemplate,
                                Map<String, String> formData){
@@ -54,20 +55,14 @@ public class RepositoryService
         // добываем форму по названию.
         // Заполняем форму?
         System.out.println("56::::" + formData.toString());
-        var listFormField = FromFormDataDTOToFormFieldMapper
-                .mapping(formRepository
-                        .getFormByName(nameForm));
+        var listFormField = FromFormDataDTOToFormFieldMapper.mapping(formRepository.getFormByName(nameForm));
 
-        System.out.println("60::::" + listFormField.toString());
-        for (var el: listFormField) {
-            el.setValue_field(formData.get(el.getTag_field()));
-        }
+        System.out.println("60::::" + listFormField.toString()); //Все SOP менять на log.
+
+        listFormField.forEach(el -> el.setValue_field(formData.get(el.getTag_field())));
 
         System.out.println("65::::" + listFormField.toString());
-        templateRepository
-                .addNewTemplate(nameForm,
-                nameTemplate,
-                listFormField);
+        templateRepository.addNewTemplate(nameForm, nameTemplate, listFormField);
     }
 
     public void deleteTemplateByName(String fullTempName){
