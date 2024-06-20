@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div class="header">
+    <h2>Шаблоны и формы</h2>
+</div>
+
+<!--<form id="form_data"-->
+<!--      action="/index"-->
+<!--      method="get">-->
+<!--    <div class="button-cont1">-->
+<!--        <input class="buttons" type="submit"-->
+<!--               value="На главную">-->
+<!--    </div>-->
+<!--</form>-->
+
+<h3 class="header-mini down">Выбрать форму для создания шаблона:</h3>
+<!-- Form для отображения форм -->
+<form id="form_template"
+      action="/index"
+      method="post"
+      enctype="multipart/form-data">
+    <ul>
+<!--        <div class="one-line" th:each="nameForm : ${namesForm}">-->
+<!--            <li>-->
+<!--                <a class="links" th:href="@{/v2/index/?type=form&name=${nameForm}}" id="submit_form">-->
+<!--                    <label th:text="${nameForm}"> </label>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--        </div>-->
+
+        <li th:each="nameForm : ${namesForm}">
+            <a class="links" th:href="@{/v1/index?type=form&name={nameF}(nameF=${nameForm})}"
+               id="submit_form">
+                <label th:text="${nameForm}"> </label>
+            </a>
+            <a class="delete" th:href="@{/v1/del?type=form&name={formN}(formN=${nameForm})}" >-</a>
+
+        </li>
+
+
+    </ul>
+</form>
+<br><br>
+
+<h3 class="header-mini">Выбрать шаблон:</h3>
+<!-- Form для отображения шаблонов -->
+<form id="form_template2"
+      action="/index"
+      method="post"
+      enctype="multipart/form-data">
+    <ul>
+
+        <div class="one-line" th:each="template : ${templates}">
+
+<!--            <a class="links" th:href="@{/v1/index?type=template&name={nameF}(nameF=${template.nameTemplate})}"-->
+            <a class="links" th:href="@{/v1/index?type=template&name={nameF}(:){nameT}(nameT=${template.nameTemplate},
+            nameF=${template.nameForm})}"
+               id="submit_form">
+                <label th:text="${template.nameTemplate}"> </label>
+            </a>
+
+            <div class="name-form">
+                <label th:text="${template.nameForm}"> </label>
+            </div>
+
+<!--            <div class="delete" onclick="deleteTemp(this);"-->
+<!--                 th:data-nameform="@{${template.nameForm}(:)${template.nameTemplate}" title="Удалить шаблон">-->
+<!--                - -->
+<!--            </div>-->
+
+            <a class="delete" th:href="@{/v1/del?type=template&name={nameF}(:){nameT}(nameT=${template.nameTemplate},
+            nameF=${template.nameForm})}" >-</a>
+        </div>
+
+    </ul>
+</form>
+<br><br>
+
+
+<style>
+    html {
+        --main-color: #234988;
+        --hover-color: #3e69ae;
+        --light-hover: #f2a3a3;
+    }
+
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    .button-cont1 {
+        display: flex;
+        width: calc(100% - 20px);
+        justify-content: flex-end;
+        margin-top: 7px;
+        position: fixed;
+    }
+
+    .links {
+        font-size: 18px;
+        text-decoration: none;
+        cursor: pointer;
+        color: dodgerblue;
+        width: 25%;
+    }
+
+    .one-line a:hover {
+        color: var(--hover-color) !important;
+    }
+
+    .one-line {
+        margin-bottom: 15px;
+        display: flex;
+    }
+
+    .name-form {
+        font-size: 18px;
+        margin-left: 10px;
+        width: 20%;
+    }
+
+    .down {
+        margin-top: 90px;
+    }
+
+    .header {
+        width: 100%;
+        position: fixed;
+        background-color: var(--main-color);
+        color: #ffffff;
+        padding-left: 20px;
+        top: 0;
+    }
+
+    .delete {
+        margin-left: 8px;
+        /*width: 18px;*/
+        /*height: 18px;*/
+        font-size: 20px;
+        color: red;
+        background-color: white;
+        /*cursor: pointer;*/
+        text-align: center;
+        /*line-height: 18px;*/
+        /*border-radius: 5px;*/
+        /*box-shadow: 0px 3px 7px 0px #8c8c8c;*/
+        font-family: monospace;
+        font-weight: bold;
+        text-decoration: none;
+
+    }
+
+    .delete:hover {
+        background-color: var(--light-hover);
+    }
+
+
+
+    .buttons {
+        border-radius: 10px;
+        margin-bottom: 20px;
+        background-color: var(--main-color);
+        cursor: pointer;
+        color: #ffffff;
+        border-color: var(--main-color);
+        height: 40px;
+        line-height: 20px;
+        font-size: 16px;
+        margin-left: 30px;
+        box-shadow: 0px 3px 7px 0px #8c8c8c;
+        border-width: 0;
+        padding: 10px;
+    }
+
+    .buttons:hover {
+        background-color: var(--hover-color);
+    }
+
+    .header-mini {
+        margin-left: 20px;
+        color: var(--main-color);
+    }
+
+</style>
+
+<script>
+    console.log("Script work")
+    document.getElementById('submit_form')
+        .addEventListener('click', function () {
+            document.getElementById('form_template').submit();
+        });
+
+    const deleteTemp = (element) => {
+
+        var nameForm = element.getAttribute("data-nameform");
+
+        console.log(nameForm);
+        // fetch метод delete, в боди отдать name
+        //
+    }
+</script>
+
+</body>
+</html>

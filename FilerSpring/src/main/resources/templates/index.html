@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузка файла</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="Content-Language" content="ru"/>
+
+</head>
+<body>
+<div class="header">
+    <h2>Заполнение шаблона</h2>
+</div>
+<style>
+    html {
+        --main-color: #234988;
+        --hover-color: #3e69ae;
+    }
+
+    body {
+        margin: 0;
+    }
+
+    .header {
+        width: 100%;
+        position: fixed;
+        background-color: var(--main-color);
+        color: #ffffff;
+        padding-left: 20px;
+        top: 0;
+    }
+
+    .buttons {
+        border-radius: 10px;
+        margin-bottom: 20px;
+        background-color: var(--main-color);
+        cursor: pointer;
+        color: #ffffff;
+        border-color: var(--main-color);
+        height: 40px;
+        line-height: 20px;
+        font-size: 16px;
+        margin-left: 30px;
+        box-shadow: 0px 3px 7px 0px #8c8c8c;
+        border-width: 0;
+        padding: 10px;
+    }
+
+    .container {
+        width: calc(25px + 50%);
+        display: flex;
+        justify-content: center;
+    }
+
+    .header-mini {
+        margin-left: 20px;
+        color: var(--main-color);
+    }
+
+    .file-button {
+        margin-left: 20px;
+    }
+
+    .buttons:hover {
+        background-color: var(--hover-color);
+    }
+
+    .input-text {
+        width: 40%;
+        padding: 10px;
+        box-sizing: border-box;
+        height: 40px;
+        border-color: transparent;
+        /* border: 2px	var(--main-color) solid; */
+        border-radius: 8px;
+        font-size: 16px;
+        box-shadow: 0px 3px 5px 1px #8c8c8c4a;
+    }
+
+    .one-line {
+        display: flex;
+
+    label {
+        width: 20%;
+        display: block;
+        margin-bottom: 1px;
+        font-size: 18px;
+        margin-right: 15px;
+        margin-left: 10px;
+        text-align: end;
+        line-height: 30px;
+    }
+
+    input {
+        width: 30%;
+        padding: 5px;
+        box-sizing: border-box;
+        margin-bottom: 20px;
+        height: 30px;
+        border-color: transparent;
+        border: 2px var(--main-color) solid;
+        border-radius: 8px;
+        box-shadow: 0px 3px 5px 1px #8c8c8c4a;
+
+    }
+
+
+
+    .one-line2 {
+        width: calc(25px + 50%);
+        display: flex;
+        justify-content: center;
+
+        /* label {
+            width: 10%;
+            display: block;
+            margin-bottom: 1px;
+            /* font-size: 18px;
+            margin-right: 15px;
+            text-align: end;
+            line-height: 30px;
+        } */
+
+        /* input {
+            width: 20%;
+            padding: 1px;
+            margin-bottom: 1px;
+            box-sizing: border-box;
+        } */
+    }
+
+    ul {
+        margin-top: 90px;
+    }
+</style>
+<form id="form_data" action="/index" method="post" enctype="multipart/form-data">
+    <ul>
+        <li class="one-line" th:each="item : ${data}">
+            <label th:text="${item.name_field}"></label>
+            <input id="form1"
+                   th:value="${item.value_field}"
+                   th:type="text"
+                   th:name="${item.tag_field}"
+                   th:title="${item.hint}">
+        </li>
+    </ul>
+<!--</form>-->
+
+<!--<form>-->
+    <input class="file-button"
+           id="file1"
+           type="file"
+           name="file"><br> <br>
+
+
+    <div class="container">
+        <input class="buttons"
+               type="button"
+               value="Заполнить документ"
+               onclick="checkTemplateFile();">
+    </div>
+    <br><br><br>
+    <h3 class="header-mini">Сохранение шаблона</h3>
+</form>
+
+
+<form  id="form_save_template"
+       method="post"
+       enctype="multipart/form-data">
+    <div class="one-line2">
+        <input class="input-text" type="text" placeholder="Введите имя шаблона" name="name_template" id="name_template">
+        <input class="buttons"
+               id="name-f"
+               type="button"
+               value="Сохранить шаблон" onclick="checkTemplate();">
+        <input type="hidden" id="name-form" th:value="${name_form}" >
+
+    </div>
+</form>
+
+<br><br>
+<!--<h3 class="header-mini">Выбрать шаблон из существующих</h3>-->
+<form id="form_data1"
+      action="/v1/templates"
+      method="get">
+    <input class="buttons"
+           type="submit"
+           value="Загрузить шаблон из списка">
+</form>
+<!--<h3 class="header-mini">Создать форму для шаблона</h3>-->
+<form id="form_data2"
+      action="/v1/create-form"
+      method="get">
+    <input class="buttons"
+           type="submit"
+           value="Создать форму для шаблона">
+</form>
+<script>
+
+
+
+    function checkAllFields() {
+        var fields = document.querySelectorAll('[id = "form1"]')
+        var name_form = document.getElementById("name_form");
+
+        var isEmpty = false;
+        fields.forEach(function (field) {
+            if (field.value === "") {
+                isEmpty = true
+            }
+        });
+        if (isEmpty) {
+            alert("Некоторые поля не заполнены")
+        } else {
+            var form = document.getElementById("form_data");
+            form.action = "/v1/save-template/" + name_form;
+            form.submit();
+        }
+
+    }
+
+    function checkTemplateFile() {
+
+        var form = document.getElementById("form_data");
+
+        form.action = "/v1/filldoc";
+        var formData = new FormData(form);
+
+        const fileInput = document.getElementById('file1');
+        const file = fileInput.files[0];
+        formData.append('file', file);
+
+        // fetch('/v1/filldoc', {
+        //     method: 'POST',
+        //     body: formData
+        // })
+        //     .then(response => {
+        //         // Обработка ответа
+        //     })
+        //     .catch(error => {
+        //         // Обработка ошибки
+        //     });
+
+
+        fetch('/v1/filldoc', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка HTTP: ' + response.status);
+                }
+
+                // Получаем заголовок Content-Disposition из ответа
+                const contentDisposition = response.headers.get('Content-Disposition');
+                if (contentDisposition) {
+                    const filename = contentDisposition.split('filename=')[1].replace(/['"]/g, '');
+                    console.log(filename);
+
+                    // Скачиваем файл
+                    response.blob().then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    });
+                } else {
+                    throw new Error('Заголовок Content-Disposition отсутствует в ответе');
+                }
+            })
+            .catch(error => {
+                console.error('Произошла ошибка:', error);
+            });
+
+
+
+
+
+
+    }
+
+    function checkTemplate() {
+        console.log("85858");
+        var textField = document.getElementById("name_template");
+
+        var textValue = textField.value.trim();
+        var name_form = document.getElementById("name-form");
+
+
+        if (textValue === "") {
+            alert("Введите название шаблона");
+        } else {
+            var form = document.getElementById("form_data");
+
+            form.action = "/v1/save-template/" + name_form.value+ "/" + textValue;
+          //  form.submit();
+
+            var formData = new FormData(form);
+
+            console.log(JSON.stringify(formData).toString());
+            console.log("241");
+
+            fetch("/v1/save-template/"
+                + name_form.value
+                + "/"
+                + textValue,
+                {
+                method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Handle success
+                        console.log('Data sent successfully');
+                        alert("Шаблон успешно сохранен")
+
+                    } else {
+                        // Handle error
+                        console.error('Failed to send data');
+                        alert("Серверная ошибка сохранения шаблона")
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    }
+
+</script>
+
+</body>
+</html>

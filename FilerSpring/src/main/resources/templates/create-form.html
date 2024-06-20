@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Input Field Example</title>
+</head>
+<body>
+
+<div class="header">
+    <h2>Создание формы</h2>
+</div>
+
+<form id="myForm" class="down">
+
+    <div id="field">
+        <input type="text"
+               name="inputField[]"
+               id="nameTemp"
+               class="input-text"
+               placeholder="Имя формы"/>
+        <br>
+    </div>
+
+    <div id="container" class="label">
+
+    </div>
+
+    <button type="button" id="addButton" class="add">+</button>
+    <br>
+
+
+
+</form>
+<form id="send_form" class="cont-input">
+    <button type="button" class="buttons" onclick="getInfo()">Отправить</button>
+</form>
+
+=
+
+<style>
+
+    html {
+        --main-color: #234988;
+        --hover-color: #3e69ae;
+        --light-hover: #a6c3f3;
+    }
+
+    body {
+        margin: 0;
+    }
+
+    .inputs {
+        font-size: 18px;
+        padding: 5px;
+        box-sizing: border-box;
+        margin-bottom: 15px;
+        margin-right: 20px;
+        height: 30px;
+        border-color: transparent;
+        border: 2px	var(--main-color) solid;
+        border-radius: 8px;
+        box-shadow: 0px 3px 5px 1px #8c8c8c4a;
+    }
+
+    .add {
+        margin-left: 8px;
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+        color: #000000;
+        background-color: white;
+        cursor: pointer;
+        text-align: center;
+        line-height: 15px;
+        border-radius: 5px;
+        border: none;
+        box-shadow: 0px 3px 7px 0px #8c8c8c;
+        font-family: monospace;
+        margin-bottom: 20px;
+        margin-top: 10px;
+    }
+
+    .add:hover {
+        background-color: var(--light-hover);
+    }
+
+    .header {
+        width: 100%;
+        position: fixed;
+        background-color: var(--main-color);
+        color: #ffffff;
+        padding-left: 20px;
+        top: 0;
+    }
+
+    .down {
+        margin-top: 90px;
+        margin-left: 20px;
+        width: 50%;
+    }
+
+    .headers-table {
+        font-size: 18px;
+        margin-bottom: 20px;
+        color: var(--main-color);
+        padding-right: 20px;
+    }
+
+    .cont-input {
+        width: 678px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .input-text {
+        /* width: 30%; */
+        margin-left: 6px;
+        margin-bottom: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+        height: 40px;
+        border-color: transparent;
+        /* border: 2px	var(--main-color) solid; */
+        border-radius: 8px;
+        font-size: 18px;
+        box-shadow: 0px 3px 5px 1px #8c8c8c4a;
+    }
+
+    .buttons {
+        border-radius: 10px;
+        margin-bottom: 20px;
+        background-color: var(--main-color);
+        cursor: pointer;
+        color: #ffffff;
+        border-color: var(--main-color);
+        height: 40px;
+        line-height: 20px;
+        font-size: 16px;
+        margin-left: 30px;
+        box-shadow: 0px 3px 7px 0px #8c8c8c;
+        border-width: 0;
+        padding: 10px;
+    }
+
+    .buttons:hover {
+        background-color: var(--hover-color);
+    }
+</style>
+
+<script>
+    const getInfo = () => {
+        let tabl = document.getElementById('table1');
+        let nameTemp = document.getElementById('nameTemp').value;
+
+        if (!tabl) {
+            alert("Шаблон не найден.")
+            return 0;
+        }
+
+        if (!nameTemp) {
+            alert("Необходимо заполнить все поля.")
+            return 0;
+        }
+
+        let result = {
+            'name_form': nameTemp,
+            'name_list': [],
+            'tag_list': [],
+            'hint_list': []
+        };
+
+        let rows = tabl.querySelectorAll('tr');
+        var rowIndex = 0;
+        while (rowIndex < rows.length) {
+            var row = rows[rowIndex];
+            var cells = row.querySelectorAll('td');
+
+            var cellIndex = 0;
+            var allFieldsFilled = true;
+            while (cellIndex < cells.length) {
+                var cell = cells[cellIndex];
+                var input = cell.querySelector('input');
+
+                if (!input.value) {
+                    alert("Необходимо заполнить все поля.");
+                    allFieldsFilled = false;
+                    break;
+                } else {
+                    if (input.name === 'nameField[]') {
+                        result['name_list'].push(String(input.value));
+                    }
+                    if (input.name === 'tagField[]') {
+                        result['tag_list'].push(String(input.value));
+                    }
+                    if (input.name === 'hintField[]') {
+                        result['hint_list'].push(String(input.value));
+                    }
+                }
+                cellIndex++;
+            }
+
+            if (!allFieldsFilled) {
+                break;
+            }
+
+            rowIndex++;
+        }
+        console.log(result);
+
+        // To do добавить запрос к беку
+        fetch('/v1/submit', { // Assuming Flask route is '/submit'
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify(result)
+
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Handle success
+                    console.log('Data sent successfully');
+                    alert("Шаблон успешно сохранен")
+
+                } else {
+                    // Handle error
+                    console.error('Failed to send data');
+                    alert("Серверная ошибка сохранения шаблона")
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    document.getElementById('addButton').addEventListener('click', function () {
+        var container = document.getElementById('container');
+
+        // Проверка, существует ли уже таблица
+        var table = container.querySelector('table');
+
+        if (!table) {
+            // Создание таблицы, если она не существует
+            table = document.createElement('table');
+            table.id = 'table1';
+            // Создание строки заголовков
+            var headerRow = document.createElement('tr');
+
+            // Создание заголовков, если таблица только что создана
+            var nameHeader = document.createElement('th');
+            nameHeader.textContent = 'Название поля';
+            nameHeader.className = 'headers-table';
+            var tagHeader = document.createElement('th');
+            tagHeader.textContent = 'Тэг поля';
+            tagHeader.className = 'headers-table';
+            var hintHeader = document.createElement('th');
+            hintHeader.textContent = 'Подсказка';
+            hintHeader.className = 'headers-table';
+
+            // Добавление заголовков в строку заголовков
+            headerRow.appendChild(nameHeader);
+            headerRow.appendChild(tagHeader);
+            headerRow.appendChild(hintHeader);
+
+            // Добавление строки заголовков в таблицу
+            table.appendChild(headerRow);
+
+            // Добавление таблицы в контейнер
+            container.appendChild(table);
+        }
+
+        // Создание строки для полей ввода
+        var inputRow = document.createElement('tr');
+
+        // Создание ячеек для полей ввода
+        var nameCell = document.createElement('td');
+        var nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.name = 'nameField[]';
+        nameInput.required = true;
+        nameInput.className = 'inputs';
+        nameCell.appendChild(nameInput);
+
+        var tagCell = document.createElement('td');
+        var tagInput = document.createElement('input');
+        tagInput.type = 'text';
+        tagInput.name = 'tagField[]';
+        tagInput.required = true;
+        tagInput.className = 'inputs';
+        tagCell.appendChild(tagInput);
+
+        var hintCell = document.createElement('td');
+        var hintInput = document.createElement('input');
+        hintInput.type = 'text';
+        hintInput.name = 'hintField[]';
+        hintInput.required = true;
+        hintInput.className = 'inputs';
+        hintCell.appendChild(hintInput);
+
+        // Добавление ячеек в строку полей ввода
+        inputRow.appendChild(nameCell);
+        inputRow.appendChild(tagCell);
+        inputRow.appendChild(hintCell);
+
+        // Добавление строки полей ввода в таблицу
+        table.appendChild(inputRow);
+    });
+
+    //
+    // document.getElementById('myForm').addEventListener('button', function (e) {
+    //     e.preventDefault(); // Prevent default form submission
+    //     console.log('TEST');
+    //     var formData = new FormData(this); // Get form data
+    //     fetch('/v1/submit', { // Assuming Flask route is '/submit'
+    //         method: 'POST',
+    //         body: formData
+    //     })
+    //         .then(response => {
+    //             if (response.ok) {
+    //                 // Handle success
+    //                 console.log('Data sent successfully');
+    //             } else {
+    //                 // Handle error
+    //                 console.error('Failed to send data');
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //         });
+    // });
+</script>
+</body>
+</html>
