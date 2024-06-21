@@ -102,7 +102,7 @@ public class MainHandler {
     }
 
 
-    @GetMapping("v1/dropAll")
+    @GetMapping("/dropAll")
     public void dropAll() {
         repositoryService.dropALL();
 
