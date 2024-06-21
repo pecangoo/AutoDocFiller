@@ -12,16 +12,14 @@ import java.util.List;
 
 @Repository
 public class FormRepositoryMongoImpl
-        implements FormRepository{
+        implements FormRepository {
 
     private MongoClient mongoClient;
     private MongoDatabase database;
 
-    public FormRepositoryMongoImpl
-            (MongoClient mongoClient) {
+    public FormRepositoryMongoImpl(MongoClient mongoClient) {
         this.mongoClient = mongoClient;
-        this.database = this.mongoClient
-                .getDatabase("formsDB");
+        this.database = this.mongoClient.getDatabase("formsDB");
     }
 
 
@@ -31,20 +29,16 @@ public class FormRepositoryMongoImpl
         deleteFormByName(data.getNameForm());
 
         //TODO: Нужно ли проверять на повторность?
-        MongoCollection<Document> collection
-                = database.getCollection(data.getNameForm());
+        MongoCollection<Document> collection = database.getCollection(data.getNameForm());
         for (int i = 0; i < data.getNameList().size(); i++) {
             Document employee = new Document()
-                    .append("name_field",
-                            data.getNameList().get(i))
-                    .append("tag_field",
-                            data.getTagList().get(i))
-                    .append("hint_field",
-                            data.getHintList().get(i));
+                    .append("name_field", data.getNameList().get(i))
+                    .append("tag_field", data.getTagList().get(i))
+                    .append("hint_field", data.getHintList().get(i));
             collection.insertOne(employee);
         }
 
-        System.out.println("Success");
+        System.out.println("Success"); // log
     }
 
 
@@ -59,8 +53,7 @@ public class FormRepositoryMongoImpl
 
 //        MongoDatabase database = mongoClient.getDatabase("formsDB");
         var col = database.getCollection(nameForm);
-        MongoCursor<Document> cursor = col.find().iterator();
-        try {
+        try (MongoCursor<Document> cursor = col.find().iterator()) {
             while (cursor.hasNext()) {
                 Document doc = cursor.next();
                 nameFieldList.add(doc.get("name_field").toString());
@@ -68,8 +61,6 @@ public class FormRepositoryMongoImpl
                 hintFieldList.add(doc.get("hint_field").toString());
 //                System.out.println(doc.toJson());
             }
-        } finally {
-            cursor.close();
         }
         formDataDto.setNameList(nameFieldList);
         formDataDto.setTagList(tagFieldList);
@@ -79,17 +70,12 @@ public class FormRepositoryMongoImpl
 
     @Override
     public List<String> getAllListNamesForms() {
-
-        List<String> listNamesForms = new ArrayList<String>();
+        List<String> listNamesForms = new ArrayList<>();
         MongoDatabase database = mongoClient.getDatabase("formsDB");
-        MongoIterable<String> collectionNames = database.listCollectionNames();
-        MongoCursor<String> it = collectionNames.iterator();
-        while (it.hasNext()) {
-            String collectionName = it.next();
+
+        for (String collectionName : database.listCollectionNames()) {
             listNamesForms.add(collectionName);
-
         }
-
         return listNamesForms;
     }
 
@@ -100,15 +86,14 @@ public class FormRepositoryMongoImpl
 
     @Override
     public void deleteFormByName(String nameForm) {
-        boolean collectionExists =
-                database.listCollectionNames()
-                        .into(new ArrayList<>())
-                        .contains(nameForm);
-
-        if (collectionExists){
-            database
-                    .getCollection(nameForm)
-                    .drop();
+        if (isCollectionExists(nameForm)) {
+            database.getCollection(nameForm).drop();
         }
+    }
+
+    private boolean isCollectionExists(String nameForm) {
+        return database.listCollectionNames()
+                .into(new ArrayList<>())
+                .contains(nameForm);
     }
 }

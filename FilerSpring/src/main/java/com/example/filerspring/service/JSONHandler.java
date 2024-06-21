@@ -25,7 +25,6 @@ public class JSONHandler {
     private Gson gson;
 
     public JSONHandler() {
-
         this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 

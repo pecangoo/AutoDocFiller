@@ -1,7 +1,9 @@
 package com.example.filerspring.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,10 +11,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+@Slf4j
 public class AutoFiller {
-    private XWPFDocument doc;
-    private Map<String, String> dictValues;
+
+    private final XWPFDocument doc;
+
+    private final Map<String, String> dictValues;
+
+    @Value("${mongo.file.tmp.prefix}")
+    private String prefix;
+
+    @Value("${mongo.file.tmp.suffix}")
+    private String suffix;
 
     public AutoFiller(String docxFile, Map<String, String> dictValues) throws IOException {
         FileInputStream fis = new FileInputStream(docxFile);
@@ -21,14 +33,13 @@ public class AutoFiller {
         fis.close();
     }
 
-    public AutoFiller(FileInputStream fis, Map<String, String> dictValues) throws IOException {
+    public AutoFiller(FileInputStream fis) throws IOException {
         this.doc = new XWPFDocument(fis);
         this.dictValues = new HashMap<>();
         fis.close();
     }
 
     public AutoFiller(File file, Map<String, String> dictValues) throws IOException {
-
         var fis = new FileInputStream(file);
         this.doc = new XWPFDocument(fis);
         this.dictValues = dictValues;
@@ -41,23 +52,25 @@ public class AutoFiller {
     }
 
     public void addValueToMap(String key, String value) {
-        this.dictValues.put(key, value);
+        dictValues.put(key, value);
     }
 
     public void replaceAllInDocx() {
-        for (String key : this.dictValues.keySet()) {
-            System.out.println(key + " : " + this.dictValues.get(key));
-            replaceTextInDocx(key, this.dictValues.get(key));
+        for (String key : dictValues.keySet()) {
+            System.out.println(key + " : " + dictValues.get(key));
+            replaceTextInDocx(key, dictValues.get(key));
         }
     }
 
-    public void replaceTextInDocx(String oldText, String newText) {
+    private void replaceTextInDocx(String oldText, String newText) {
         for (XWPFParagraph paragraph : doc.getParagraphs()) {
             String text = paragraph.getText();
             if (text.contains(oldText)) {
                 for (XWPFRun run : paragraph.getRuns()) {
                     String runText = run.getText(0);
-                    if (runText == null) continue;
+                    if (Objects.isNull(runText)) {
+                        continue;
+                    }
                     if (runText.contains(oldText)) {
                         runText = runText.replace(oldText, newText);
                         run.setText(runText, 0);
@@ -104,20 +117,27 @@ public class AutoFiller {
 
     }
 
-    public void saveDocToFile(String newPath) throws IOException {
-        FileOutputStream fos = new FileOutputStream(newPath);
-        doc.write(fos);
-        fos.close();
+    public void saveDocToFile(String newPath) {
+        try (FileOutputStream fos = new FileOutputStream(newPath)) {
+            doc.write(fos);
+        } catch (IOException e) {
+            log.error("Could not create file {}", newPath);
+        }
     }
 
-    public File getTempFile() throws IOException {
-        File tempFile = File.createTempFile("/Users/svetislavdobromirov/Documents/temp", ".docx");
-
-
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        doc.write(fos);
-        fos.close();
-        System.out.println(tempFile.getAbsolutePath());
+    public File getTempFile()  {
+        File tempFile;
+        try {
+            tempFile = File.createTempFile(prefix, suffix);
+        } catch (IOException e) {
+            log.warn("Could not create temp file {}", prefix + suffix);
+            throw new RuntimeException(e);
+        }
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            doc.write(fos);
+        } catch (IOException e) {
+            log.error("Could not create file {}", tempFile.getAbsolutePath());
+        }
         return tempFile;
     }
 }

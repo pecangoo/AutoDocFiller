@@ -9,8 +9,7 @@ public interface TemplateRepository {
 
     List<FormField> getTemplateByName(String nameTemplate);
 
-    void addNewTemplate(String nameForm, String nameTemplate,
-                        List<FormField> listFormField);
+    void addNewTemplate(String nameForm, String nameTemplate, List<FormField> listFormField);
 
     void dropALL();
 
