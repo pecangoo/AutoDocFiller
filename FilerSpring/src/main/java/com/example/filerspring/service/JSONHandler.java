@@ -1,19 +1,14 @@
 package com.example.filerspring.service;
 
-import com.example.filerspring.constans.Routes;
+import com.example.filerspring.constans.Constans;
 import com.example.filerspring.model.FormField;
-import com.example.filerspring.model.ListFormField;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 
 //public class Types {
 //    public static final String form_path = "data/form_path.json";
@@ -45,7 +40,7 @@ public class JSONHandler {
 //            System.out.println("Path to file: " + filePath);
 //        }
 
-        String fName = Routes.PATH_TO_ORIGIN_FORM;
+        String fName = Constans.PATH_TO_ORIGIN_FORM;
         try (FileReader reader = new FileReader(fName)) {
             FormField[] formDataDTOList =  gson.fromJson(reader, FormField[].class);
             return formDataDTOList;

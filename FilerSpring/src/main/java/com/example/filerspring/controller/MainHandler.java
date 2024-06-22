@@ -1,88 +1,84 @@
 package com.example.filerspring.controller;
 
 
-import com.example.filerspring.constans.Routes;
+import com.example.filerspring.constans.Constans;
 import com.example.filerspring.mappers.FormDataMapper;
-import com.example.filerspring.model.FormDataDTO;
 import com.example.filerspring.mappers.FromFormDataDTOToFormFieldMapper;
+import com.example.filerspring.model.FormDataDTO;
 import com.example.filerspring.service.AutoFiller;
 import com.example.filerspring.service.JSONHandler;
 import com.example.filerspring.service.RepositoryService;
-import com.example.filerspring.utils.Utils;
+import com.example.filerspring.utils.MultiPartUtils;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-//TODO: константы на путях
-@Controller
+@Slf4j
+@Controller()
+@AllArgsConstructor
+@RequestMapping("/v1")
 public class MainHandler {
+    private final RepositoryService repositoryService;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         // Проверяем наличие шаблона по умолчанию в базе данных.
         // Если нет - добавляем
 
         try {
             var origTemplate = FormDataMapper
-                    .mapToFormDataDTO(new JSONHandler().readJsonToDict(),
-                            Routes.NameOriginForm);
+                    .mapToFormDataDTO(new JSONHandler()
+                            .readJsonToDict(), Constans.NAME_ORIGIN_FORM);
 
             repositoryService.addNewForm(origTemplate);
         } catch (Exception es) {
-            System.out.println("EXEXEXEXEXEXEXEXEEXE:" +  es);
+            log.error("Ошибка при инициализации стандартного шаблона");
+            System.exit(1);
         }
     }
-    @Autowired
-    private RepositoryService repositoryService;
 
-    @GetMapping("/v1/index")
+
+    @GetMapping("/index")
     public String getIndex(
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String name,
             Model model
     ) {
-
-
-        if (type == null || name == null) {
-            // TODO: Предусмотреть "Стандартный" шаблон
+        if (Objects.isNull(type) || Objects.isNull(name)) {
             var formToTemplate =
-                    FromFormDataDTOToFormFieldMapper
-                            .mapping(
-                                    repositoryService
-                                            .getFormByName("Стандартная форма")
-                            );
+                    FromFormDataDTOToFormFieldMapper.mapping(repositoryService
+                            .getFormByName(Constans.NAME_ORIGIN_FORM)
+                    );
             model.addAttribute("data", formToTemplate);
             model.addAttribute("name_form", name);
         } else {
-            if (type.equals("form")) {
+            if ("form".equals(type)) {
                 var formToTemplate =
-                        FromFormDataDTOToFormFieldMapper
-                                .mapping(
-                                        repositoryService
-                                                .getFormByName(name)
-                                );
+                        FromFormDataDTOToFormFieldMapper.mapping(
+                                repositoryService.getFormByName(name)
+                        );
                 model.addAttribute("data", formToTemplate);
                 model.addAttribute("name_form", name);
-             //   System.out.println(model.asMap());
-            } else if (type.equals("template")) {
-                System.out.println("Tempplate to FRONT: " +
-                        repositoryService.getTemplateByName(name));
-               model.addAttribute("data", repositoryService.getTemplateByName(name));
+            } else if ("template".equals(type)) {
+                var listToFront = repositoryService.getTemplateByName(name);
+                model.addAttribute("data", listToFront);
             }
         }
 
@@ -90,93 +86,68 @@ public class MainHandler {
     }
 
 
-    @GetMapping("/v1/create-form")
+    @GetMapping("/create-form")
     public String formsCreate() {
         return "create-form.html";
     }
 
-    @GetMapping("/v1/test")
-    public String test() {
 
-        return "Ok";
-    }
-
-    @PostMapping("/v1/save-template/{form}/{temp}")
+    @PostMapping(value = "/save-template/{form}/{temp}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> saveTemplate(@PathVariable String form,
                                                @PathVariable String temp,
                                                @RequestParam Map<String, String> formData) {
-        {
-           // System.out.println("FormData:  " + formData.keySet().toString());
-            repositoryService.addNewTemplate(form, temp, formData);
-            return  ResponseEntity.ok("Success");
-        }
+
+        repositoryService.addNewTemplate(form, temp, formData);
+        return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
 
 
-    @GetMapping("v1/dropAll")
+    @GetMapping("/dropAll")
     public void dropAll() {
         repositoryService.dropALL();
-
     }
+
     @GetMapping("/")
     public String mainRedirect() {
-        String redirectUrl = "/v1/index";
+        String redirectUrl = "/index";
         return "redirect:" + redirectUrl;
     }
 
-    @GetMapping("/v1/del")
+    @GetMapping("/del")
     public String del(
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String name
     ) {
-        if (type.equals("template")) {
+        if ("template".equals(type)) {
             repositoryService.deleteTemplateByName(name);
-        } else if (type.equals("form")) {
-            if (!name.equals(Routes.NameOriginForm))
+        } else if ("form".equals(type)) {
+            if (!Constans.NAME_ORIGIN_FORM.equals(name))
                 repositoryService.deleteFormByName(name);
         }
         return "redirect:" + "templates";
     }
 
 
-
-    @PostMapping(value = "/v1/submit")
+    @PostMapping(value = "/submit")
     public ResponseEntity<String> saveForm(
             @RequestBody FormDataDTO formDataDTO) {
-        System.out.println("qwe");
-        System.out.println(formDataDTO);
         repositoryService.addNewForm(formDataDTO);
-        return  ResponseEntity.ok("Success");
+        return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
 
 
-
-
-    @PostMapping("/v1/filldoc")
-    public ResponseEntity<Resource>
-    fillDocument(@RequestParam("file")
-                 MultipartFile file,
+    @PostMapping("/filldoc")
+    public ResponseEntity<Resource> fillDocument(@RequestParam("file") MultipartFile file,
                  @RequestParam Map<String, String> formData) {
 
-        String pathFile = "";
-        if (file.isEmpty()) {
-            System.out.println( "Выберите файл для загрузки.");
-        } else {
-            System.out.println("Кажется файл передался");
-        }
-
-        System.out.println("File formData: " + formData.keySet().toString());
         try {
+            var newFile = MultiPartUtils.convertMultipartFileToFile(file);
 
-
-            var newFile = Utils.convertMultipartFileToFile(file);
-
-            var autoFiller = new AutoFiller(newFile,
-                    formData);
+            var autoFiller = new AutoFiller(newFile, formData);
             autoFiller.replaceAllInDocx();
-            pathFile = autoFiller.getTempFile().getAbsolutePath();
-            System.out.println("Fill should be");
-
+            String pathFile = autoFiller.getTempFile().getAbsolutePath();
             Path path = Paths.get(pathFile);
             Resource resource = new InputStreamResource(Files.newInputStream(path));
             System.out.println(resource);
@@ -184,41 +155,24 @@ public class MainHandler {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "newDoc.docx" + "\"")
                     .body(resource);
 
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-
         }
-
-
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "newDoc" + "\"")
-//                .body(null);
-
-      // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Произошла ошибка при обработке запроса");
-
     }
 
-//    @GetMapping("/v1/testgetAll")
-//    public String getAll(){
-//
-//        return "templates";
-//    }
 
-    @GetMapping("/v1/templates")
+    @GetMapping("/templates")
     public String showTemplatesAndForms(Model model) {
         var listNames = repositoryService.getAllForms();
 
         var listTemplates = repositoryService.getALlTemplates();
 
-        System.out.println(listNames);
         model.addAttribute("namesForm", listNames);
         model.addAttribute("templates", listTemplates);
         return "templates.html";
     }
 
-    @PostMapping("/v1/deleteForm/{form}")
+    @PostMapping("/deleteForm/{form}")
     public String deleteForm(
             @PathVariable String form) {
         repositoryService.deleteFormByName(form);
@@ -228,7 +182,7 @@ public class MainHandler {
 
     }
 
-    @PostMapping("/v1/deleteTemplate/{form}/{template}")
+    @PostMapping("/deleteTemplate/{form}/{template}")
     public String deleteTemplate(
             @PathVariable String form,
             @PathVariable String template

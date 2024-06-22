@@ -80,14 +80,17 @@ public class FormRepositoryMongoImpl
     @Override
     public List<String> getAllListNamesForms() {
 
-        List<String> listNamesForms = new ArrayList<String>();
+        List<String> listNamesForms = new ArrayList<>();
         MongoDatabase database = mongoClient.getDatabase("formsDB");
-        MongoIterable<String> collectionNames = database.listCollectionNames();
-        MongoCursor<String> it = collectionNames.iterator();
-        while (it.hasNext()) {
-            String collectionName = it.next();
+//        MongoIterable<String> collectionNames = database.listCollectionNames();
+//        MongoCursor<String> it = collectionNames.iterator();
+//        while (it.hasNext()) {
+//            String collectionName = it.next();
+//            listNamesForms.add(collectionName);
+//
+//        }
+        for (String collectionName : database.listCollectionNames()) {
             listNamesForms.add(collectionName);
-
         }
 
         return listNamesForms;
@@ -100,15 +103,22 @@ public class FormRepositoryMongoImpl
 
     @Override
     public void deleteFormByName(String nameForm) {
-        boolean collectionExists =
-                database.listCollectionNames()
-                        .into(new ArrayList<>())
-                        .contains(nameForm);
+        boolean collectionExists = isCollectionExists(nameForm);
+//                database.listCollectionNames()
+//                        .into(new ArrayList<>())
+//                        .contains(nameForm);
 
         if (collectionExists){
             database
                     .getCollection(nameForm)
                     .drop();
         }
+    }
+
+
+    private boolean isCollectionExists(String nameForm) {
+        return database.listCollectionNames()
+                .into(new ArrayList<>())
+                .contains(nameForm);
     }
 }
