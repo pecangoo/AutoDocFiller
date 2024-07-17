@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FormDataMapper {
-    public static FormDataDTO mapToFormDataDTO(FormField[] formFields, String nameForm) {
+    public static FormDataDTO mapToFormDataDTO(List<FormField> formFields,
+                                               String nameForm) {
         FormDataDTO formDataDTO = new FormDataDTO();
         formDataDTO.setNameForm(nameForm);
 

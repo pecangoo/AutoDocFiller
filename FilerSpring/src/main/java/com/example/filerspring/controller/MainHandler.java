@@ -31,10 +31,11 @@ import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
-@Controller()
+@Controller
 @AllArgsConstructor
 @RequestMapping("/v1")
 public class MainHandler {
+    private final JSONHandler jsonHandler;
     private final RepositoryService repositoryService;
 
     @PostConstruct
@@ -44,11 +45,12 @@ public class MainHandler {
 
         try {
             var origTemplate = FormDataMapper
-                    .mapToFormDataDTO(new JSONHandler()
+                    .mapToFormDataDTO(jsonHandler
                             .readJsonToDict(), Constans.NAME_ORIGIN_FORM);
 
             repositoryService.addNewForm(origTemplate);
         } catch (Exception es) {
+            es.printStackTrace();
             log.error("Ошибка при инициализации стандартного шаблона");
             System.exit(1);
         }
