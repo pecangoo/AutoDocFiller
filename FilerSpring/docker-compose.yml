@@ -12,7 +12,7 @@ services:
     image: openjdk:20
     container_name: java_app_container
     ports:
-      - "8888:8080"
+      - "8080:8080"
     volumes:
       - /Users/svetislavdobromirov/working/AutoDocFiller/FilerSpring/target/FilerSpring-0.0.1-SNAPSHOT.jar:/app/app.jar
     command: ["java", "-jar", "/app/app.jar"]
