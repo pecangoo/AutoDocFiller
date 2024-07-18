@@ -18,6 +18,9 @@ services:
     command: ["java", "-jar", "/app/app.jar"]
     depends_on:
       - mongodb
+#    networks:
+#      - filler_network
+
     environment:
       - MONGO=mongodb
 
